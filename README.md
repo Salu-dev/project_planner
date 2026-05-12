@@ -1,6 +1,6 @@
 # Project Planner
 
-A comprehensive project planning and management app for Frappe/ERPNext that extends the Project module with structured task planning, approval workflows, and Gantt chart visualization. This application was developed as part of a technical evaluation for DexQBit.
+A comprehensive project planning and management app for Frappe/ERPNext that extends the Project module with structured task planning, approval workflows, and Gantt chart visualization.
 
 ## Overview
 
