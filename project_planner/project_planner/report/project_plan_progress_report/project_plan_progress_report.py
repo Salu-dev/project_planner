@@ -17,6 +17,11 @@ def get_columns():
 			"options": "Project Plan",
 		},
 		{
+			"fieldname": "plan_title",
+			"label": "Plan Title",
+			"fieldtype": "Data",
+		},
+		{
 			"fieldname": "project",
 			"label": "Project",
 			"fieldtype": "Link",
@@ -57,7 +62,7 @@ def get_columns():
 			"fieldname": "status",
 			"label": "Status",
 			"fieldtype": "Select",
-			"options": "\nDraft\nApproved\nIn Review\nRejected\nCompleted"
+			"options": "\nDraft\nIn Review\nApproved"
 		}
 	]
 
