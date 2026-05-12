@@ -6,27 +6,29 @@ def task_on_update(doc, method):
 
     if not doc.custom_project_plan:
         return
-    sync_task_status_to_child_table(doc)
-    update_parent_status(doc.custom_project_plan)
+    old_doc = doc.get_doc_before_save()
+    if old_doc and old_doc.status!=doc.status:
+        if doc.status in ["Open","Working", "Completed"]:
+            sync_task_status_to_child_table(doc, old_doc)
+            update_parent_status(doc.custom_project_plan)
 
-def sync_task_status_to_child_table(doc):
+def sync_task_status_to_child_table(doc, old_doc):
 
-	"""Update Project Plan child table task status based on Task status update"""
-	old_doc=doc.get_doc_before_save()
-	if old_doc and (old_doc.status != doc.status):
-		if doc.status == "Working":
-			status="In Progress"
-		elif doc.status == "Completed":
-			status="Completed"
-		else:
-			return
+    """Update Project Plan child table task status based on Task status update"""
 
-		# get child table row
-		if doc.custom_project_plan:
-			project_plan_task = frappe.get_value("Plan Task", {"task_id": doc.name}, "name")
-			if project_plan_task:
-				frappe.db.set_value("Plan Task", project_plan_task, "status", status)
-		frappe.db.commit()
+    if doc.status == "Working":
+        status="In Progress"
+    elif doc.status == "Completed":
+        status="Completed"
+    else:
+        return
+
+    # get child table row
+    if doc.custom_project_plan:
+        project_plan_task = frappe.get_value("Plan Task", {"task_id": doc.name}, "name")
+        if project_plan_task:
+            frappe.db.set_value("Plan Task", project_plan_task, "status", status)
+    frappe.db.commit()
 
 
 def update_parent_status(project_plan):

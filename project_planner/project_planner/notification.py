@@ -124,3 +124,34 @@ def send_review_reminder_notifications():
         args=args,
         now=True
     )
+
+
+def send_task_assignment_notification(task_title, assigned_to, project_plan_name, start_date, end_date):
+    """Send notification when a task is assigned to a user"""
+    if not assigned_to:
+        return
+
+    # Check if user is enabled
+    if not frappe.get_value("User", assigned_to, "enabled"):
+        return
+
+    subject = _("Task Assigned - {0}").format(task_title)
+    message = f"You have been assigned to task: {task_title}"
+
+    args = {
+        "message": message,
+        "task_title": task_title,
+        "project_plan": project_plan_name,
+        "start_date": start_date,
+        "end_date": end_date,
+        "request_url": frappe.utils.get_url_to_form("Project Plan", project_plan_name)
+    }
+
+    frappe.sendmail(
+        template="task_assignment",
+        recipients=[assigned_to],
+        subject=subject,
+        args=args,
+        header=[subject, "green"],
+        now=True
+    )

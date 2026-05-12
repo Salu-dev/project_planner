@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe import _
-# from frappe.desk.form.utils import add_share
+from project_planner.project_planner.notification import send_task_assignment_notification
 
 
 class ProjectPlan(Document):
@@ -127,6 +127,7 @@ class ProjectPlan(Document):
 	
 	def auto_create_tasks(self):
 		"""Auto-create tasks for the project plan."""
+		
 		try:
 			for plan_task in self.task_plan:
 				if not plan_task.task_id:
@@ -140,11 +141,17 @@ class ProjectPlan(Document):
 					new_task.custom_project_plan = self.name
 					new_task.insert(ignore_permissions=True)
 					frappe.db.set_value("Plan Task", plan_task.name, "task_id", new_task.name)
+					# Send notification to assigned user
+					if plan_task.assigned_to:
+						send_task_assignment_notification(
+							task_title=plan_task.task_title,
+							assigned_to=plan_task.assigned_to,
+							project_plan_name=self.name,
+							start_date=plan_task.start_date,
+							end_date=plan_task.end_date
+						)
 		except Exception as e:
-			frappe.log_error(e, "Project Plan Auto Create Tasks Error")
-			frappe.throw("Error creating tasks: " + str(e))
-		# share task to assigned user
-		# add_share(new_task.doctype, new_task.name, plan_task.assigned_to, write=1, flags={"ignore_permissions": True})
+			frappe.log_error(e, "Project Plan Auto Create Tasks Error")	
 
 	def prevent_deletion_if_approved(self):
 		"""Prevent deletion of a Project Plan if its Status is Approved."""
