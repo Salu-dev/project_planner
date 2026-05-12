@@ -138,14 +138,19 @@ permission_query_conditions = {
 # Document Events
 # ---------------
 # Hook on document methods and events
-
-# doc_events = {
+doc_events = {
 # 	"*": {
 # 		"on_update": "method",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
 # 	}
-# }
+"Project Plan": {
+    "on_update": "project_planner.project_planner.notification.send_notification"
+},
+"Task": {
+    "on_update": "project_planner.project_planner.api.task_on_update"
+}
+ }
 
 # Scheduled Tasks
 # ---------------
