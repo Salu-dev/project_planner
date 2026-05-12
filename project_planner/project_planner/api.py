@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from project_planner.project_planner.notification import send_task_completion_notification
 
 
 def task_on_update(doc, method):
@@ -20,6 +21,7 @@ def sync_task_status_to_child_table(doc, old_doc):
         status="In Progress"
     elif doc.status == "Completed":
         status="Completed"
+        send_task_completion_notification(doc)
     else:
         return
 
