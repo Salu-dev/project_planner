@@ -117,9 +117,11 @@ app_license = "mit"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	# "Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+    # "Project": "project_planner.project_planner.doctype.project_plan.project_plan.get_permission_query_conditions",
+    "Project Plan": "project_planner.project_planner.permissions.project_plan_permission",
+}
 #
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
