@@ -3,6 +3,8 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe import _
+# from frappe.desk.form.utils import add_share
 
 
 class ProjectPlan(Document):
@@ -13,10 +15,20 @@ class ProjectPlan(Document):
 		self.validate_project_dates()
 		# Validate task dates
 		self.validate_task_dates()	
+		# Ensure atleast one task plan before submit for review
+		self.validate_task_plan_count()
+		# Validate task status
+		self.validate_task_status()
 
 	def on_update(self):
 		# Auto-set the Project Plan's Status to In Review when at least one Plan Task is marked as Completed.
 		self.update_parent_status()
+		
+	def on_submit(self):
+		if self.status == "Approved":
+			self.update_parent_fields()
+			self.update_project_users()
+			self.auto_create_tasks()
 
 	def on_trash(self):
 		# Prevent deletion of a Project Plan if its Status is Approved.
@@ -55,28 +67,108 @@ class ProjectPlan(Document):
 		-  Validate that the Plan Task's Start Date and End Date fall within the parent 
 			Project Plan's date range
 		"""
-		for task in self.tasks:
-			if task.start_date and task.end_date:
-				if task.start_date > task.end_date:
+		project_start = frappe.utils.getdate(self.start_date)
+		project_end = frappe.utils.getdate(self.end_date)
+		for task in self.task_plan:
+			task_start = frappe.utils.getdate(task.start_date)
+			task_end = frappe.utils.getdate(task.end_date)
+			if task_start and task_end:
+				if task_start > task_end:
 					frappe.throw("Task start date cannot be greater than task end date")
-			if task.start_date:
-				if task.start_date < self.start_date:
+				if task_start < project_start:
 					frappe.throw("Task start date cannot be less than project start date")
-			if task.end_date:
-				if task.end_date > self.end_date:
+				if task_end > project_end:
 					frappe.throw("Task end date cannot be greater than project end date")
+
+	def validate_task_plan_count(self):
+		"""
+		- Atleast one task plan should be there before submit for review
+		"""
+		if self.status != "Draft" and not self.task_plan:
+			frappe.throw("Atleast one task plan should be there before submit for review")
+
+	def validate_task_status(self):
+		"""Validate task status.
+		
+		- Task status cannot be Approved if project plan is not approved
+		"""
+		if self.status != "Approved":
+			for task in self.task_plan:
+				if task.status == "Approved":
+					frappe.throw("Task status cannot be Approved if project plan is not approved")
 
 	def update_parent_status(self):
 		# Check if at least one task is completed
-		completed_tasks = [task for task in self.tasks if task.status == "Completed"]
+		completed_tasks = [task for task in self.task_plan if task.status == "Completed"]
 		if completed_tasks:
-			self.status = "In Review"
+			self.db_set("status", "In Review")
+
+	def update_parent_fields(self):
+		"""Update parent fields when project plan is submitted."""
+		self.db_set("approved_by", frappe.session.user)
+		self.db_set("approved_on", frappe.utils.now_datetime())
+		self.db_set("is_approved", 1)
+
+	def update_project_users(self):
+		"""Update project users when project plan is Approved."""
+		project = frappe.get_doc("Project", self.project)
+		# Check if user already exists in custom_team_members to avoid duplication
+		existing_users = [member.user for member in project.custom_team_members]
+		if self.assigned_to not in existing_users:
+			project.append("custom_team_members", {
+				"user": self.assigned_to
+			})
+		for task in self.task_plan:
+			if task.assigned_to not in existing_users:
+				project.append("custom_team_members", {
+					"user": task.assigned_to
+				})		
+		project.save()
+	
+	def auto_create_tasks(self):
+		"""Auto-create tasks for the project plan."""
+		try:
+			for plan_task in self.task_plan:
+				if not plan_task.task_id:
+					new_task = frappe.new_doc("Task")
+					new_task.subject = plan_task.task_title
+					new_task.project = self.project
+					new_task.priority = plan_task.priority
+					new_task.exp_start_date = plan_task.start_date
+					new_task.exp_end_date = plan_task.end_date
+					new_task.custom_assigned_to = plan_task.assigned_to
+					new_task.custom_project_plan = self.name
+					new_task.insert(ignore_permissions=True)
+					frappe.db.set_value("Plan Task", plan_task.name, "task_id", new_task.name)
+		except Exception as e:
+			frappe.log_error(e, "Project Plan Auto Create Tasks Error")
+			frappe.throw("Error creating tasks: " + str(e))
+		# share task to assigned user
+		# add_share(new_task.doctype, new_task.name, plan_task.assigned_to, write=1, flags={"ignore_permissions": True})
 
 	def prevent_deletion_if_approved(self):
 		"""Prevent deletion of a Project Plan if its Status is Approved."""
-		if self.status == "Approved" and "Administrator" not in frappe.get_roles():
+		if self.is_approved and "Administrator" not in frappe.get_roles():
 			frappe.throw("Cannot delete a Project Plan with status 'Approved'")
 		
 
 	def get_project(self):
 		return frappe.get_doc("Project", self.project)
+
+
+@frappe.whitelist()
+def get_project_users(doctype, txt, searchfield, start, page_len, filters):
+	"""Get users assigned to a project"""
+	project = filters.get("project") if filters else None
+	if not project:
+		return []
+	user_filters = {"parent": project}
+	if txt:
+		user_filters["user"] = ["like", f"%{txt}%"]
+	
+	users = frappe.get_all(
+		"Project User",
+		filters=user_filters,
+		fields=["user","full_name"]
+	)
+	return [[user.user,user.full_name, ] for user in users]

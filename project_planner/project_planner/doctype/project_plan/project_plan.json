@@ -3,19 +3,28 @@
  "allow_rename": 1,
  "autoname": "PRJ-PLAN-.#####",
  "creation": "2026-05-11 17:13:22.783138",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "project",
   "start_date",
+  "assigned_to",
   "column_break_ocwj",
   "plan_title",
   "end_date",
+  "status",
   "section_break_ksqb",
   "notes",
-  "status",
   "task_plan_tab",
-  "task_plan"
+  "task_plan",
+  "amended_from",
+  "section_break_ifzx",
+  "is_approved",
+  "column_break_kugw",
+  "approved_on",
+  "column_break_vtua",
+  "approved_by"
  ],
  "fields": [
   {
@@ -36,7 +45,7 @@
   {
    "fetch_from": "project.expected_start_date",
    "fieldname": "start_date",
-   "fieldtype": "Datetime",
+   "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Start Date",
    "reqd": 1
@@ -45,7 +54,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Draft\nIn Review,\nApproved",
+   "options": "Draft\nIn Review\nApproved\nCompleted",
    "read_only": 1
   },
   {
@@ -60,7 +69,7 @@
   {
    "fetch_from": "project.expected_end_date",
    "fieldname": "end_date",
-   "fieldtype": "Datetime",
+   "fieldtype": "Date",
    "in_list_view": 1,
    "label": "End Date",
    "reqd": 1
@@ -79,13 +88,67 @@
    "fieldtype": "Table",
    "label": "Task Plan",
    "options": "Plan Task"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Project Plan",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "options": "User"
+  },
+  {
+   "fieldname": "section_break_ifzx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_approved",
+   "fieldtype": "Check",
+   "label": "Is Approved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_kugw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Date",
+   "label": "Approved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_vtua",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_calendar_and_gantt": 1,
- "links": [],
- "modified": "2026-05-11 17:42:56.381468",
+ "is_submittable": 1,
+ "links": [
+  {
+   "link_doctype": "Task",
+   "link_fieldname": "custom_project_plan"
+  }
+ ],
+ "modified": "2026-05-12 23:19:06.485751",
  "modified_by": "Administrator",
  "module": "Project Planner",
  "name": "Project Plan",
@@ -109,5 +172,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "project"
 }

@@ -4,7 +4,7 @@ def project_plan_permission(user):
     if not user:
         user=frappe.session.user
         
-    if "Project Manager" in frappe.get_roles(user) or "Administrator" in frappe.get_roles(user):
+    if "Projects Manager" in frappe.get_roles(user) or "Administrator" in frappe.get_roles(user):
         return ""
 
     if "Project Member" in frappe.get_roles(user):
