@@ -84,10 +84,9 @@ def get_active_project_managers():
     filters={"role": "Projects Manager", "parenttype": "User", "parent": ["!=", "Administrator"]}, fields=["parent"])
     matching_users = []
     for user in role_based_users:
-        # Check if user is enabled
-        if not frappe.get_value("User", user.parent, "enabled"):
-            continue
-        matching_users.append(user.parent)
+        # check user is enabled
+        if frappe.get_value("User", user.parent, "enabled"):
+            matching_users.append(user.parent)
 
     return matching_users
 
@@ -178,7 +177,7 @@ def send_task_completion_notification(task):
     }
 
     frappe.sendmail(
-        template="task_completion",
+        template="task_assignment",
         recipients=[task.custom_assigned_to],
         subject=subject,
         args=args,

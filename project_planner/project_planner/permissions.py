@@ -3,13 +3,14 @@ import frappe
 def project_plan_permission(user):
     if not user:
         user=frappe.session.user
-        
+    # Projects Manager and Administrator have full access
     if "Projects Manager" in frappe.get_roles(user) or "Administrator" in frappe.get_roles(user):
+        
         return ""
 
+    # Project Member: can view/update own created, assigned to, or task assignee in approved plans
     if "Project Member" in frappe.get_roles(user):
-        
-        return f"""
+        condition = f"""
             (
                 `tabProject Plan`.owner = '{user}'
                 OR
@@ -25,3 +26,9 @@ def project_plan_permission(user):
                 )
             )
         """
+        
+        return condition
+
+    # If user has none of the roles, deny access
+    frappe.log_error(f"Access denied for {user}", "Project Plan Permission Debug")
+    return "1=0"

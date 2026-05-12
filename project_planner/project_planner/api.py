@@ -9,19 +9,19 @@ def task_on_update(doc, method):
         return
     old_doc = doc.get_doc_before_save()
     if old_doc and old_doc.status!=doc.status:
-        if doc.status in ["Open","Working", "Completed"]:
+        if doc.status in ["Working", "Completed"]:
             sync_task_status_to_child_table(doc, old_doc)
             update_parent_status(doc.custom_project_plan)
 
 def sync_task_status_to_child_table(doc, old_doc):
 
-    """Update Project Plan child table task status based on Task status update"""
-
+    """Update Project Plan child table task status based on Task status update""" 
+    
     if doc.status == "Working":
         status="In Progress"
     elif doc.status == "Completed":
         status="Completed"
-        send_task_completion_notification(doc)
+        
     else:
         return
 
@@ -30,7 +30,6 @@ def sync_task_status_to_child_table(doc, old_doc):
         project_plan_task = frappe.get_value("Plan Task", {"task_id": doc.name}, "name")
         if project_plan_task:
             frappe.db.set_value("Plan Task", project_plan_task, "status", status)
-    frappe.db.commit()
 
 
 def update_parent_status(project_plan):

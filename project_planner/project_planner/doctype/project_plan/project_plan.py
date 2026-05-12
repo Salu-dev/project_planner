@@ -50,14 +50,19 @@ class ProjectPlan(Document):
 		- Start date cannot be greater than end date
 		- Project plan start date and end date should be in between project start date and end date
 		"""
-		if self.start_date and self.end_date:
-			if self.start_date > self.end_date:
+		project = self.get_project()
+		project_start_date = frappe.utils.getdate(project.expected_start_date) if project.expected_start_date else None
+		project_end_date = frappe.utils.getdate(project.expected_end_date) if project.expected_end_date else None
+		project_plan_start_date = frappe.utils.getdate(self.start_date) if self.start_date else None
+		project_plan_end_date = frappe.utils.getdate(self.end_date) if self.end_date else None
+		if project_plan_start_date and project_plan_end_date:
+			if project_plan_start_date > project_plan_end_date:
 				frappe.throw("Start date cannot be greater than end date")
-		if self.start_date:
-			if self.start_date < self.get_project().expected_start_date:
+		if project_start_date and project_plan_start_date:
+			if project_plan_start_date < project_start_date:
 				frappe.throw("Start date cannot be less than project start date")
-		if self.end_date:
-			if self.end_date > self.get_project().expected_end_date:
+		if project_end_date and project_plan_end_date:
+			if project_plan_end_date > project_end_date:
 				frappe.throw("End date cannot be greater than project end date")
 
 	def validate_task_dates(self):
@@ -67,18 +72,18 @@ class ProjectPlan(Document):
 		-  Validate that the Plan Task's Start Date and End Date fall within the parent 
 			Project Plan's date range
 		"""
-		project_start = frappe.utils.getdate(self.start_date)
-		project_end = frappe.utils.getdate(self.end_date)
+		project_plan_start = frappe.utils.getdate(self.start_date)
+		project_plan_end = frappe.utils.getdate(self.end_date)
 		for task in self.task_plan:
 			task_start = frappe.utils.getdate(task.start_date)
 			task_end = frappe.utils.getdate(task.end_date)
 			if task_start and task_end:
 				if task_start > task_end:
 					frappe.throw("Task start date cannot be greater than task end date")
-				if task_start < project_start:
-					frappe.throw("Task start date cannot be less than project start date")
-				if task_end > project_end:
-					frappe.throw("Task end date cannot be greater than project end date")
+				if task_start < project_plan_start:
+					frappe.throw("Task start date cannot be less than project Plan start date")
+				if task_end > project_plan_end:
+					frappe.throw("Task end date cannot be greater than project Plan end date")
 
 	def validate_task_plan_count(self):
 		"""
@@ -90,18 +95,19 @@ class ProjectPlan(Document):
 	def validate_task_status(self):
 		"""Validate task status.
 		
-		- Task status cannot be Approved if project plan is not approved
+		- Task status cannot be chnage if project plan is not approved
 		"""
-		if self.status != "Approved":
+		if not self.is_approved:
 			for task in self.task_plan:
-				if task.status == "Approved":
-					frappe.throw("Task status cannot be Approved if project plan is not approved")
+				if task.status != "Open":
+					frappe.throw("Task status cannot be changed if project plan is not approved")
 
 	def update_parent_status(self):
 		# Check if at least one task is completed
 		completed_tasks = [task for task in self.task_plan if task.status == "Completed"]
 		if completed_tasks:
 			self.db_set("status", "In Review")
+			self.db_set("workflow_state", "In Review")
 
 	def update_parent_fields(self):
 		"""Update parent fields when project plan is submitted."""
@@ -151,13 +157,14 @@ class ProjectPlan(Document):
 							end_date=plan_task.end_date
 						)
 		except Exception as e:
-			frappe.log_error(e, "Project Plan Auto Create Tasks Error")	
+			frappe.log_error(e, "Project Plan Auto Create Tasks Error")
 
 	def prevent_deletion_if_approved(self):
 		"""Prevent deletion of a Project Plan if its Status is Approved."""
 		if self.is_approved and "Administrator" not in frappe.get_roles():
 			frappe.throw("Cannot delete a Project Plan with status 'Approved'")
-		
+		if self.is_approved and "Project Manager" not in frappe.get_roles():
+			frappe.throw("Cannot delete a Project Plan with status 'Approved'")
 
 	def get_project(self):
 		return frappe.get_doc("Project", self.project)

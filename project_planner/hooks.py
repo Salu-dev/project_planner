@@ -83,7 +83,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "project_planner.install.before_install"
-after_install = "project_planner.install.after_install"
+# after_install = "project_planner.install.after_install"
 
 # Uninstallation
 # ------------
@@ -264,7 +264,7 @@ fixtures=[
     {
         "dt":"Workflow State",
         "filters":{
-            "name": ["in", ["In Review"]]
+            "name": ["in", ["Draft", "In Review"]]
         }
     }
 ]

@@ -54,7 +54,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Priority",
-   "options": "\nLow\nMedium\nHigh",
+   "options": "Low\nMedium\nHigh",
    "reqd": 1
   },
   {
@@ -63,7 +63,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "\nOpen\nIn Progress\nCompleted"
+   "options": "Open\nIn Progress\nCompleted\nCancelled"
   },
   {
    "fieldname": "task_id",
@@ -77,7 +77,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-05-12 00:16:31.599647",
+ "modified": "2026-05-13 01:06:33.907643",
  "modified_by": "Administrator",
  "module": "Project Planner",
  "name": "Plan Task",
