@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:role",
  "creation": "2026-05-11 18:22:55.188632",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -11,16 +12,18 @@
   {
    "fieldname": "role",
    "fieldtype": "Data",
-   "label": "Role"
+   "label": "Role",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-11 18:23:03.597391",
+ "modified": "2026-05-11 18:43:38.957770",
  "modified_by": "Administrator",
  "module": "Project Planner",
  "name": "App Role",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
