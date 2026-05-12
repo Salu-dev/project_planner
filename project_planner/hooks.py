@@ -260,5 +260,11 @@ fixtures=[
         "filters":{
             "name":["in",["Project Plan Workflow"]]
         }
+    },
+    {
+        "dt":"Workflow State",
+        "filters":{
+            "name": ["in", ["In Review"]]
+        }
     }
 ]
