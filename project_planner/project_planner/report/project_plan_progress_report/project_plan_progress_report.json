@@ -1,0 +1,34 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-05-12 14:16:21.462921",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": null,
+ "modified": "2026-05-12 14:16:21.462921",
+ "modified_by": "Administrator",
+ "module": "Project Planner",
+ "name": "Project Plan Progress Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Project Plan",
+ "report_name": "Project Plan Progress Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Project Manager"
+  },
+  {
+   "role": "Project Member"
+  }
+ ],
+ "timeout": 0
+}
