@@ -1,0 +1,28 @@
+<p>The following project plans are still pending review:</p>
+<table style="border-collapse: collapse; width: 100%;">
+	<thead>
+		<tr style="background-color: #f2f2f2;">
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Plan</th>
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Title</th>
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Start Date</th>
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">End Date</th>
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Project</th>
+			<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for plan in project_plans %}
+		<tr>
+			<td style="border: 1px solid #ddd; padding: 8px;">{{ plan.name }}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">{{ plan.plan_title or 'N/A' }}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">{{ plan.start_date or 'N/A' }}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">{{ plan.end_date or 'N/A' }}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">{{ plan.project or 'N/A' }}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">
+				<a href="{{ frappe.utils.get_url_to_form('Project Plan', plan.name) }}" style="background-color: #4CAF50; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">View</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<p>Please review and take necessary action.</p>

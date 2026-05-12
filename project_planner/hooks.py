@@ -155,13 +155,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"project_planner.tasks.all"
 # 	],
-# 	"daily": [
-# 		"project_planner.tasks.daily"
-# 	],
+	"daily": [
+		"project_planner.project_planner.notification.send_review_reminder_notifications"
+	],
 # 	"hourly": [
 # 		"project_planner.tasks.hourly"
 # 	],
@@ -171,7 +171,7 @@ doc_events = {
 # 	"monthly": [
 # 		"project_planner.tasks.monthly"
 # 	],
-# }
+ }
 
 # Testing
 # -------
