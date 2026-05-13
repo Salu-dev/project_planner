@@ -186,11 +186,7 @@ The Project Plan list view includes a built-in Gantt chart:
 
 1. Navigate to **Project Planner → Project Plan**
 2. Click the **"Gantt"** icon in the view switcher
-3. The Gantt chart displays:
-   - Project Plans as parent bars
-   - Plan Tasks as child bars grouped under their Project Plan
-   - Color-coded by status
-   - Timeline based on Start Date and End Date fields
+
 
 ### Progress Report
 
