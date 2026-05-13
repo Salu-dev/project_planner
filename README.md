@@ -56,19 +56,33 @@ bench restart
 
 ### Post-Installation Setup
 
-After installation, the app automatically:
-1. Creates required roles (Projects Manager, Project Member)
-2. Sets up role profiles and module profiles
-3. Configures permissions for Project Plan doctype
-4. Adds custom fields to Task and Project doctypes
-5. Sets up the approval workflow
-6. Creates the custom workspace
+After installation, perform the following manual setup:
+
+1. **Create Roles** (via Setup > User & Permissions > Role):
+   - Create "Projects Manager" role
+   - Create "Project Member" role
+
+2. **Create Role Profiles** (via Setup > User & Permissions > Role Profile):
+   - Create "Projects Manager" profile (include both Projects Manager and Project Member roles)
+   - Create "Project Member" profile (include Project Member role only)
+
+3. **Configure Permissions** (via Project Plan DocType > Permissions):
+   - **Projects Manager**: Full access (Read, Write, Create, Delete, Submit, Amend, Share, Export)
+   - **Project Member**: Read, Write, Create only (No Delete, Submit, Cancel, Amend)
+   - **System Manager**: Full access
+
+4. **Add Custom Fields** (automatically added via fixtures):
+   - Task: `custom_assigned_to`, `custom_project_plan`
+   - Project: `custom_team_members`
+
+5. **Workflow** (automatically loaded via fixtures):
+   - Project Plan Workflow will be created automatically
 
 ## Configuration
 
 ### Roles and Permissions
 
-The app automatically creates the following roles upon installation:
+The following roles should be created manually during post-installation setup:
 
 #### Projects Manager
 - **Project Plan**: Full access (Read, Write, Create, Delete, Submit, Amend, Share, Export)
@@ -258,11 +272,6 @@ The app sends automatic email notifications:
   - Permission query conditions for Project Member role
   - Row-level security based on ownership and assignment
 
-- **Installation Script** (`install.py`):
-  - Automated setup of roles and permissions
-  - Role profile and module profile creation
-  - Custom permission configuration
-
 - **Workflow Configuration** (`fixtures/workflow.json`):
   - Workflow states and transitions
   - Role-based transition permissions
@@ -284,7 +293,6 @@ project_planner/
 │   ├── api.py                          # Task synchronization hooks
 │   ├── notification.py                 # Email notification handlers
 │   ├── permissions.py                  # Permission query conditions
-│   ├── install.py                      # Installation setup script
 │   ├── custom/                         # Custom field definitions
 │   │   ├── project.json                # Project doctype custom fields
 │   │   └── task.json                   # Task doctype custom fields
@@ -347,7 +355,7 @@ The workflow is configured via JSON fixtures:
 
 Permissions are implemented at three levels:
 
-1. **DocType Permissions** (in install.py):
+1. **DocType Permissions** (configured manually in DocType settings):
    - CRUD permissions per role
    - Submit/Cancel/Amend permissions
    - Share/Export/Print permissions
