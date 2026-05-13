@@ -72,19 +72,18 @@ def get_data(filters):
 	project_plan_filter={}
 	if "project" in filters:
 		project_plan_filter["project"] = filters["project"]
-	
-	if "start_date" in filters:
-		project_plan_filter["start_date"] = filters["start_date"]
-	
-	if "end_date" in filters:
-		project_plan_filter["end_date"] = filters["end_date"]
-	
+
+	if "start_date" in filters and "end_date" in filters:
+		# Filter plans where start_date and end_date are within the range
+		project_plan_filter["start_date"] = [">=", filters["start_date"]]
+		project_plan_filter["end_date"] = ["<=", filters["end_date"]]
+
 	if "status" in filters:
 		project_plan_filter["status"] = filters["status"]
-	
+
 	if "assigned_to" in filters:
 		project_plan_filter["assigned_to"] = filters["assigned_to"]
-	
+
 	# Get project plans with the filters
 	project_plans = frappe.get_all("Project Plan", filters=project_plan_filter, fields=["*"])
 	

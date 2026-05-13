@@ -19,11 +19,7 @@ class ProjectPlan(Document):
 		self.validate_task_plan_count()
 		# Validate task status
 		self.validate_task_status()
-
-	def on_update(self):
-		# Auto-set the Project Plan's Status to In Review when at least one Plan Task is marked as Completed.
-		self.update_parent_status()
-		
+	
 	def on_submit(self):
 		if self.status == "Approved":
 			self.update_parent_fields()
@@ -102,12 +98,6 @@ class ProjectPlan(Document):
 				if task.status != "Open":
 					frappe.throw("Task status cannot be changed if project plan is not approved")
 
-	def update_parent_status(self):
-		# Check if at least one task is completed
-		completed_tasks = [task for task in self.task_plan if task.status == "Completed"]
-		if completed_tasks:
-			self.db_set("status", "In Review")
-			self.db_set("workflow_state", "In Review")
 
 	def update_parent_fields(self):
 		"""Update parent fields when project plan is submitted."""
@@ -162,8 +152,6 @@ class ProjectPlan(Document):
 	def prevent_deletion_if_approved(self):
 		"""Prevent deletion of a Project Plan if its Status is Approved."""
 		if self.is_approved and "Administrator" not in frappe.get_roles():
-			frappe.throw("Cannot delete a Project Plan with status 'Approved'")
-		if self.is_approved and "Project Manager" not in frappe.get_roles():
 			frappe.throw("Cannot delete a Project Plan with status 'Approved'")
 
 	def get_project(self):
