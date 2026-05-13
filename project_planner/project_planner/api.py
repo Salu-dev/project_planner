@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from project_planner.project_planner.notification import send_task_completion_notification
+from project_planner.project_planner.notification import send_task_completion_notification, send_approval_notification
 
 
 def task_on_update(doc, method):
@@ -10,7 +10,7 @@ def task_on_update(doc, method):
     old_doc = doc.get_doc_before_save()
     if old_doc and old_doc.status!=doc.status:
         if doc.status in ["Working", "Completed"]:
-            sync_task_status_to_child_table(doc, old_doc)
+            sync_task_status_to_child_table(doc)
             update_parent_status(doc.custom_project_plan)
 
 def sync_task_status_to_child_table(doc, old_doc):
@@ -21,6 +21,7 @@ def sync_task_status_to_child_table(doc, old_doc):
         status="In Progress"
     elif doc.status == "Completed":
         status="Completed"
+        send_task_completion_notification(doc)
         
     else:
         return
@@ -39,6 +40,7 @@ def update_parent_status(project_plan):
     # if all completed
     if statuses and all(s == "Completed" for s in statuses):
         new_status = "Completed"
+        send_approval_notification(doc,"Completed")
     # if any completed
     elif "Completed" in statuses:
         new_status = "In Review"
@@ -46,5 +48,5 @@ def update_parent_status(project_plan):
         new_status = "Approved"
 
     frappe.db.set_value("Project Plan", project_plan, "status", new_status)
-    frappe.db.set_value("Project Plan", project_plan, "workflow_state", new_status)
+    # frappe.db.set_value("Project Plan", project_plan, "workflow_state", new_status)
     frappe.db.commit()

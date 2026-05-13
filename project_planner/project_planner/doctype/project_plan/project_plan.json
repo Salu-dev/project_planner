@@ -52,7 +52,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
-   "label": "Status",
+   "label": "Execution Status",
    "options": "Draft\nIn Review\nApproved\nCompleted",
    "read_only": 1
   },
@@ -146,7 +146,7 @@
    "link_fieldname": "custom_project_plan"
   }
  ],
- "modified": "2026-05-13 02:10:47.965956",
+ "modified": "2026-05-13 11:21:52.477814",
  "modified_by": "Administrator",
  "module": "Project Planner",
  "name": "Project Plan",

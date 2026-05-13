@@ -3,9 +3,18 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
+  "modified": "2026-05-13 10:40:15.418182",
+  "name": "Completed",
+  "style": "Success",
+  "workflow_state_name": "Completed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
   "modified": "2026-05-11 18:45:04.878137",
   "name": "In Review",
-  "style": "",
+  "style": "Warning",
   "workflow_state_name": "In Review"
  },
  {

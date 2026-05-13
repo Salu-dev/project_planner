@@ -8,7 +8,6 @@ frappe.views.calendar["Project Plan"] = {
         status: "status",
     },
     gantt: true,
-    get_events_method: "project_planner.project_planner.api.get_gantt_events",
     filters: [
         {
             fieldtype: "Link",

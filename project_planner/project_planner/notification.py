@@ -157,23 +157,21 @@ def send_task_assignment_notification(task_title, assigned_to, project_plan_name
 
 def send_task_completion_notification(task):
     """Send notification when a task is completed"""
-    if not task.custom_assigned_to:
+    if not task.custom_project_plan:
         return
+    plan_assign_to = frappe.get_value("Project Plan", task.custom_project_plan, "assigned_to")
 
-    # Check if user is enabled
-    if not frappe.get_value("User", task.custom_assigned_to, "enabled"):
-        return
-
-    subject = _("Task Completed - {0}").format(task.subject)
-    message = f"Task {task.subject} has been completed"
+    subject = _("Task Completed - {0}").format(task.name)
+    message = f"Task {task.name} has been completed"
 
     args = {
         "message": message,
-        "task_title": task.subject,
+        "task_title": task.name,
         "project_plan": task.custom_project_plan,
         "start_date": task.exp_start_date,
         "end_date": task.exp_end_date,
-        "request_url": frappe.utils.get_url_to_form("Project Plan", task.custom_project_plan)
+        "assigned_to": task.custom_assigned_to,
+        "request_url": frappe.utils.get_url_to_form("Task", task.name)
     }
 
     frappe.sendmail(

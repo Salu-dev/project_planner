@@ -1,35 +1,17 @@
 frappe.listview_settings["Project Plan"] = {
-	add_fields: [
-		"project",
-		"status",
-		"start_date",
-		"end_date",
-		"plan_title",
-	],
-	filters: [["status", "=", "Draft"]],
-	onload: function (listview) {
-		var method = "erpnext.projects.doctype.task.task.set_multiple_status";
+    add_fields: ["project", "status", "start_date", "end_date", "plan_title"],
 
-		listview.page.add_menu_item(__("Set as Open"), function () {
-			listview.call_for_selected_items(method, { status: "Open" });
-		});
-
-		listview.page.add_menu_item(__("Set as Completed"), function () {
-			listview.call_for_selected_items(method, { status: "Completed" });
-		});
-	},
-	get_indicator: function (doc) {
-		var colors = {
-			Draft: "gray",
-			"In Review": "orange",
-			Approved: "green",
-		};
-		return [__(doc.status), colors[doc.status], "status,=," + doc.status];
-	},
+    onload: function(listview) {
+        // Add Gantt View button to toolbar
+        listview.page.add_button(__("Custom Gantt View"), function() {
+            frappe.set_route("project-plan-gantt");
+        }, "btn-primary");
+    },
+	 
 	gantt_custom_popup_html: function (ganttobj,plan) {
 		let html = `
 			<a class="text-white mb-2 inline-block cursor-pointer"
-				href="/app/task/${ganttobj.id}"">
+				href="/app/project-plan/${ganttobj.id}">
 				${ganttobj.name}
 			</a>
 		`;

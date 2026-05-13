@@ -22,7 +22,7 @@ def project_plan_permission(user):
                         FROM `tabPlan Task`
                         WHERE assigned_to = '{user}'
                     )
-                    AND `tabProject Plan`.status = 'Approved'
+                    AND `tabProject Plan`.is_approved = 1
                 )
             )
         """
